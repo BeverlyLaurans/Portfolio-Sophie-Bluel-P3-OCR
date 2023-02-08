@@ -1,4 +1,25 @@
-// Ajout des projets à la galerie
+// Gestion du login
+
+const stayLogged = localStorage.getItem("user");
+console.log(stayLogged);
+// Récupération du token
+
+function logOut() { 
+    loggedUser = localStorage.removeItem("user");
+}
+// Gestion de la déconnexion
+
+if (stayLogged) {
+// Si l'utilisateur est logué
+    const logIn = document.querySelector("#loginLink");
+    logIn.innerText = "logout";
+    // Remplacement du lien login par logout
+    logIn.addEventListener("click", () => logOut());
+    // Au clic, déconnexion
+}
+
+
+// Récupération des projets et ajout dans la galerie
 
 fetch("http://localhost:5678/api/works")
     .then (response => response.json())
@@ -37,46 +58,46 @@ fetch("http://localhost:5678/api/works")
              // Affichage de chaque bouton          
         })
 
-            const buttons = document.querySelectorAll(".btn-category");
-            // Sélection de tous les boutons
+        const buttons = document.querySelectorAll(".btn-category");
+        // Sélection de tous les boutons
 
-            buttonAll.classList.add("active");
-            // Par défaut, ajout de la classe active sur le bouton Tous
+        buttonAll.classList.add("active");
+        // Par défaut, ajout de la classe active sur le bouton Tous
 
-            buttons.forEach(button => {
-            // Pour chacun des boutons
-                buttonAll.click();
-                // Par défaut, clic sur le bouton Tous
-                button.addEventListener("click", function() {
-                // Au clic sur un bouton,
-                    buttons.forEach(btn => btn.classList.remove("active"));
-                    this.classList.add("active");
-                    // Retire la classe active et applique la sur le bouton cliqué
+        buttons.forEach(button => {
+        // Pour chacun des boutons
+            buttonAll.click();
+            // Par défaut, clic sur le bouton Tous
+            button.addEventListener("click", function() {
+            // Au clic sur un bouton,
+                buttons.forEach(btn => btn.classList.remove("active"));
+                this.classList.add("active");
+                // Retire la classe active et applique la sur le bouton cliqué
 
-                    gallery.innerHTML = "";
-                    // Vidage de la gallerie avant chaque nouvel affichage de projets
+                gallery.innerHTML = "";
+                // Vidage de la gallerie avant chaque nouvel affichage de projets
 
-                    for (let i = 0; i < data.length; i++) {
-                    // Pour chaque projet
-                        if (this.innerText === "Tous" || data[i].category.name === this.innerText) {
-                        // Si la catégorie du projet correspond au titre du bouton ou au bouton Tous     
-                            const work = document.createElement("figure");
-                            work.classList.add("work");
-                            const workImage = document.createElement("img");
-                            const workTitle = document.createElement("figcaption");
-                            // Création des balises des projets en question
-                            workImage.src = data[i].imageUrl;
-                            workImage.crossOrigin = 'anonymous';
-                            workImage.alt = data[i].title;
-                            workTitle.innerText = data[i].title;
-                            // Configuration de la source de chaque image et de leur légende
-                            const gallery = document.querySelector(".gallery");
-                            gallery.appendChild(work);
-                            work.appendChild(workImage);
-                            work.appendChild(workTitle);
-                            // Et affichage
-                        } 
-                    }
-                })
+                for (let i = 0; i < data.length; i++) {
+                // Pour chaque projet
+                    if (this.innerText === "Tous" || data[i].category.name === this.innerText) {
+                    // Si la catégorie du projet correspond au titre du bouton ou au bouton Tous     
+                        const work = document.createElement("figure");
+                        work.classList.add("work");
+                        const workImage = document.createElement("img");
+                        const workTitle = document.createElement("figcaption");
+                        // Création des balises des projets en question
+                        workImage.src = data[i].imageUrl;
+                        workImage.crossOrigin = 'anonymous';
+                        workImage.alt = data[i].title;
+                        workTitle.innerText = data[i].title;
+                        // Configuration de la source de chaque image et de leur légende
+                        const gallery = document.querySelector(".gallery");
+                        gallery.appendChild(work);
+                        work.appendChild(workImage);
+                        work.appendChild(workTitle);
+                        // Et affichage
+                    } 
+                }
             })
+        })
     }) 
