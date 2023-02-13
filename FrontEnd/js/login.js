@@ -49,9 +49,7 @@ form.addEventListener("submit", event => {
             }
         })
         .then (data => { 
-            // console.log(data);
             if (data.token) {
-                // console.log(data.token);
                 const loggedUser = localStorage.setItem("user", data.token);
                 // Stockage du token d'authentification
                 const logIn = document.querySelector("#loginLink");
