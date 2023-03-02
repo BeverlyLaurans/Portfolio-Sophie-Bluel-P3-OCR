@@ -1,208 +1,498 @@
-// Récupération des projets et ajout dans la galerie
+let works = [];
 
-fetch("http://localhost:5678/api/works")
-    .then (response => response.json())
-    .then (data => {
-    // Récupération des travaux via l'API
-    
-        const allWorksCategories = data.map(work => work.category.name);
-        // Récupération du nom des catégories de tous les projets
-        const categoryList = new Set(allWorksCategories);
-        // Récupération de la liste des catégories (sans doublon)
-        
-        const portfolio = document.getElementById("portfolio");
-        const categoryButtonsWrapper = document.createElement("div");
-        categoryButtonsWrapper.classList.add("categories");
-        // Création de la balise contenant les boutons catégories
-        portfolio.appendChild(categoryButtonsWrapper);
+// Affichage de la galerie
+function displayWorks() {
+
         const gallery = document.querySelector(".gallery");
-        portfolio.insertBefore(categoryButtonsWrapper, gallery);
-        // Rattachement au DOM
+        gallery.innerHTML = "";
+        // Vidage de la galerie avant chaque nouvel affichage de projets
 
-        const buttonAll = document.createElement("button");
-        buttonAll.classList.add("btn-category");
-        buttonAll.setAttribute("id","all");
-        buttonAll.innerText = "Tous";
-        categoryButtonsWrapper.appendChild(buttonAll);
-        // Création du bouton Tous qui contient tous les projets
+        for (let i = 0; i < works.length; i++) {
+          if (activeButton.innerText === "Tous" || works[i].category.name === activeButton.innerText) { 
 
-        categoryList.forEach(category => {
-        // Pour chaque catégorie
-            const categoryButton = document.createElement("button");
-            categoryButton.classList.add("btn-category");
-            // Création des boutons catégorie
-            categoryButton.innerText = category;
-            // Configuration du titre de chaque bouton
-            categoryButtonsWrapper.appendChild(categoryButton);
-            // Affichage de chaque bouton          
+            // Si la catégorie du projet correspond au titre du bouton ou au bouton Tous
+            const work = document.createElement("figure");
+            work.classList.add("work");
+            const workImage = document.createElement("img");
+            const workTitle = document.createElement("figcaption");
+
+            workImage.src = works[i].imageUrl;
+            workImage.crossOrigin = "anonymous";
+            workImage.alt = works[i].title;
+            workTitle.innerText = works[i].title;
+
+            const gallery = document.querySelector(".gallery");
+            gallery.appendChild(work);
+            work.appendChild(workImage);
+            work.appendChild(workTitle);
+            // Pour chaque projet, création et affichage des balises
+          }
+        }
+}
+
+const modal = document.querySelector(".modal");
+
+function openModal() {
+    modal.style.display = "block";
+    modal.style.display = "flex";
+} // Affichage / Ouverture de la modale
+
+let addPhoto = document.querySelector(".addphoto");
+let formTitle = document.querySelector("#title");
+let formCategory = document.querySelector("#category");
+
+function closeModal() {
+    modal.style.display = "none";
+    addWorkModal.style.display = "none";
+    galleryPhotoModal.style.display = "block";
+    galleryPhotoModal.style.display = "flex";
+    formTitle.value = "";
+    formCategory.value = "";
+    const fileUploadInput = document.querySelector("#file");
+    fileUploadInput.value = "";
+    const selectedPicture = document.querySelector(".selected-picture");
+    if (selectedPicture) {
+        document.querySelector(".selected-picture").remove();
+    }
+} // Fermeture de la modale
+
+const addPhotoButton = document.querySelector(".modal-gallery-wrapper > button");
+const galleryPhotoModal = document.querySelector(".modal-gallery-wrapper");
+const addWorkModal = document.querySelector(".modal-addwork-wrapper");
+const goBackArrow = document.querySelector(".back-icon");
+
+const addPhotoPicture = document.querySelector(".addphoto > img");
+const addPhotoLabel = document.querySelector(".addphoto > label");
+// const addPhotoInput = document.querySelector(".addphoto > input");
+const addPhotoParagraph = document.querySelector(".addphoto > p");
+
+function displayAddWorkModal() {
+    galleryPhotoModal.style.display = "none";
+    addWorkModal.style.display = "block";
+    addWorkModal.style.display = "flex";
+    goBackArrow.style.display = "block";
+    document.querySelector(".close-modal").style.justifyContent = "space-between";
+    addPhotoPicture.style.display = "block";
+    addPhotoLabel.style.display = "block";
+    addPhotoParagraph.style.display = "block";
+} // Affichage de la suite de la modale pour ajouter un projet
+
+function goBackModal() {
+    addWorkModal.style.display = "none";
+    goBackArrow.style.display = "none";
+    galleryPhotoModal.style.display = "block";
+    galleryPhotoModal.style.display = "flex";
+    document.querySelector(".close-modal").style.justifyContent = "end";
+    const fileUploadInput = document.querySelector("#file");
+    fileUploadInput.value = "";
+    const selectedPicture = document.querySelector(".selected-picture");
+    if (selectedPicture) {
+        document.querySelector(".selected-picture").remove();
+    }
+    closeModal();
+    openModal();
+} // Retour au début de la modale
+
+// Affichage des projets dans la galerie photo de la modale
+function displayModalGallery() {
+    const modalGallery = document.querySelector(".modal-gallery");
+    modalGallery.innerHTML = "";
+    // Vidage de la galerie avant chaque nouvel affichage de projets
+
+    for (let i = 0; i < works.length; i++) {
+
+        const modalWork = document.createElement("div");
+        const modalWorkWithIcons = document.createElement("div");
+        const modalWorkImage = document.createElement("img");
+        const modalWorkDelete = document.createElement("img");
+        const modalWorkEdit = document.createElement("p");
+
+        modalWork.classList.add("modal-work");
+        modalWorkWithIcons.classList.add("modal-figure-elements");
+        modalWorkImage.classList.add("modal-figure");
+        modalWorkDelete.classList.add("modal-delete");
+
+        modalWorkImage.src = works[i].imageUrl;
+        modalWorkImage.crossOrigin = 'anonymous';
+        modalWorkImage.alt = works[i].title;
+        modalWorkEdit.innerText = "éditer";
+        modalWorkDelete.src = "assets/icons/delete-icon.png";
+
+        modalWorkDelete.dataset.id = works[i].id;
+        // Association de l'id du projet à son bouton delete 
+
+        const modalGallery = document.querySelector(".modal-gallery");
+        modalGallery.appendChild(modalWork);
+        modalWork.appendChild(modalWorkWithIcons);
+        modalWork.appendChild(modalWorkEdit)
+        modalWorkWithIcons.appendChild(modalWorkImage);
+        modalWorkWithIcons.appendChild(modalWorkDelete);
+        // Pour chaque projet, création, configuration et affichage de la galerie photo dans la modale
+
+        // Affichage de l'icone drag //
+
+        modalWorkWithIcons.addEventListener("mouseenter", () => {
+            const modalWorkDrag = document.createElement("img");
+            modalWorkDrag.classList.add("modal-drag");
+            modalWorkDrag.src = "assets/icons/drag-icon.png";
+            modalWorkWithIcons.appendChild(modalWorkDrag);
+        }) // Affichage de l'icone au hover
+
+        modalWorkWithIcons.addEventListener("mouseleave", () => {
+            const modalWorkDrag = document.querySelector(".modal-drag");
+            modalWorkDrag.remove();
         })
+    }
+}
 
-        const buttons = document.querySelectorAll(".btn-category");
-        // Sélection de tous les boutons
+function logOut() {
+    loggedUser = sessionStorage.removeItem("user");
+} // Gestion de la déconnexion
 
-        buttonAll.classList.add("active");
-        // Par défaut, ajout de la classe active sur le bouton Tous
+const stayLogged = sessionStorage.getItem("user");
+// Récupération du token d'authentification
 
-        buttons.forEach(button => {
-        // Pour chacun des boutons
-            buttonAll.click();
-            // Par défaut, clic sur le bouton Tous
-            button.addEventListener("click", function() {
-            // Au clic sur un bouton,
-                buttons.forEach(btn => btn.classList.remove("active"));
-                this.classList.add("active");
-                // Retire la classe active et applique la sur le bouton cliqué
 
-                gallery.innerHTML = "";
-                // Vidage de la gallerie avant chaque nouvel affichage de projets
+async function main() {
+  works = await fetch("http://localhost:5678/api/works");
+  works = await works.json(); // Récupération des projets
 
-                for (let i = 0; i < data.length; i++) {
-                // Pour chaque projet
-                    if (this.innerText === "Tous" || data[i].category.name === this.innerText) {
-                    // Si la catégorie du projet correspond au titre du bouton ou au bouton Tous     
-                        const work = document.createElement("figure");
-                        work.classList.add("work");
-                        const workImage = document.createElement("img");
-                        const workTitle = document.createElement("figcaption");
-                        // Création des balises des projets en question
-                        workImage.src = data[i].imageUrl;
-                        workImage.crossOrigin = 'anonymous';
-                        workImage.alt = data[i].title;
-                        workTitle.innerText = data[i].title;
-                        // Configuration de la source de chaque image et de leur légende
-                        const gallery = document.querySelector(".gallery");
-                        gallery.appendChild(work);
-                        work.appendChild(workImage);
-                        work.appendChild(workTitle);
-                        // Et affichage
-                    } 
+  const allWorksCategories = works.map((work) => work.category.name);
+  // Récupération du nom des catégories de tous les projets
+  const categoryList = new Set(allWorksCategories);
+  // Récupération de la liste des catégories (sans doublon)
+
+  const portfolio = document.getElementById("portfolio");
+  const categoryButtonsWrapper = document.createElement("div");
+
+  categoryButtonsWrapper.classList.add("categories");
+
+  portfolio.appendChild(categoryButtonsWrapper);
+  const gallery = document.querySelector(".gallery");
+  portfolio.insertBefore(categoryButtonsWrapper, gallery);
+  // Création et affichage de la balise contenant les boutons catégories
+  
+  if (works.length > 0) {
+    const buttonAll = document.createElement("button");
+    buttonAll.classList.add("btn-category");
+    buttonAll.setAttribute("id", "all");
+    buttonAll.innerText = "Tous";
+    categoryButtonsWrapper.appendChild(buttonAll);
+    // Création et affichage du bouton Tous qui contient tous les projets
+
+    categoryList.forEach((category) => {
+      const categoryButton = document.createElement("button");
+      categoryButton.classList.add("btn-category");
+      categoryButton.innerText = category;
+      categoryButtonsWrapper.appendChild(categoryButton);
+    }) // Création et affichage des boutons catégories pour chaque catégorie
+
+    const buttons = document.querySelectorAll(".btn-category");
+    activeButton = document.querySelector("#all");
+    buttonAll.classList.add("active");
+    // Par défaut, ajout de la classe active sur le bouton Tous
+
+    buttons.forEach((button) => {
+      buttonAll.click();
+      // Par défaut, clic sur le bouton Tous
+      button.addEventListener("click", function () {
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        this.classList.add("active");
+        activeButton = button;
+        // Au clic sur un bouton, retire la classe active et l'applique sur le bouton cliqué
+    
+      })
+    })
+    displayWorks();
+  }
+
+  // Gestion du login //
+
+if (stayLogged) {
+    const logIn = document.querySelector("#loginLink");
+    logIn.innerText = "logout";
+    logIn.addEventListener("click", () => logOut());
+    // Si l'utilisateur est logué, affichage de logout et au clic, déconnexion
+
+    // Mode édition //
+
+    // Ajout du bandeau d'édition //
+    const editBanner = document.createElement("div");
+    editBanner.classList.add("edit-banner");
+    const editMode = document.createElement("div");
+    const editModeIcon = document.createElement("img");
+    editModeIcon.src = "assets/icons/white-edit-icon.png"
+    const editModeText = document.createElement("p");
+    editModeText.innerText = "Mode édition";
+    const saveChanges = document.createElement("button");
+    saveChanges.innerHTML = "publier les changements";
+
+    const body = document.querySelector("body");
+    body.before(editBanner);
+    const header = document.querySelector("header");
+    header.style.margin = "0";
+    header.style.marginTop = "100px";
+
+    editBanner.appendChild(editMode);
+    editBanner.appendChild(saveChanges);
+    editMode.appendChild(editModeIcon);
+    editMode.appendChild(editModeText);
+
+    // Ajout des boutons d'édition //
+
+    // Bouton modifier pour la photo de présentation //
+    const pictureEditButton = document.createElement("div");
+    pictureEditButton.classList.add("btn-edit", "btn-edit-picture");
+    const pictureEditIcon = document.createElement("img");
+    pictureEditIcon.src = "assets/icons/black-edit-icon.png";
+    const pictureEditText = document.createElement("p");
+    pictureEditText.innerText = "modifier";
+
+    const introduction = document.querySelector("#introduction > figure");
+    introduction.appendChild(pictureEditButton);
+    pictureEditButton.appendChild(pictureEditIcon);
+    pictureEditButton.appendChild(pictureEditText);
+
+    // Bouton modifier pour le titre //
+    const titleEditButton = document.createElement("div");
+    titleEditButton.classList.add("btn-edit", "btn-edit-title");
+    const titleEditIcon = document.createElement("img");
+    titleEditIcon.src = "assets/icons/black-edit-icon.png";
+    const titleEditText = document.createElement("p");
+    titleEditText.innerText = "modifier";
+
+    const article = document.querySelector("article");
+    article.prepend(titleEditButton);
+    titleEditButton.appendChild(titleEditIcon);
+    titleEditButton.appendChild(titleEditText);
+
+    // Bouton modifier pour les projets //
+    const worksEditButton = document.createElement("div");
+    worksEditButton.classList.add("btn-edit", "btn-edit-works");
+    const worksEditIcon = document.createElement("img");
+    worksEditIcon.src = "assets/icons/black-edit-icon.png";
+    const worksEditText = document.createElement("p");
+    worksEditText.innerText = "modifier";
+
+    const galleryTitle = document.querySelector(".galleryTitle");
+    galleryTitle.appendChild(worksEditButton);
+    worksEditButton.appendChild(worksEditIcon);
+    worksEditButton.appendChild(worksEditText);
+
+    worksEditButton.addEventListener("click", openModal);
+    // Ouverture de la modale au clic sur le bouton modifier des projets
+
+    displayModalGallery(); // Affichage des projets dans la galerie photo de la modale
+
+    const closeButtonModal = document.querySelector(".close-icon");
+    closeButtonModal.addEventListener("click", closeModal);
+    // Fermeture de la modale au clic sur la croix
+
+    modal.addEventListener("click", closeModal);
+    // Fermeture de la modale au clic en dehors
+
+    modal.children[0].addEventListener("click", function (e) {
+        e.stopPropagation();
+    }) // Empêche le clic en dehors de la modale de se propager à la modale 
+
+    addPhotoButton.addEventListener("click", displayAddWorkModal);
+    // Affichage du gestionnaire d'ajout de projet via le bouton Ajouter une photo
+
+    const goBackArrow = document.querySelector(".back-icon");
+    goBackArrow.addEventListener("click", goBackModal);
+    // Afficher la galerie photo au clic sur la flèche retour
+}
+
+// Gestion de la suppression de projet //
+
+// Suppression d'un projet
+
+const trashIcons = document.querySelectorAll(".modal-delete");
+
+trashIcons.forEach(trashIcon => {
+    trashIcon.addEventListener("click", () => {
+
+        let id = trashIcon.dataset.id;
+       
+        fetch(`http://localhost:5678/api/works/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${sessionStorage.getItem("user")}`
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                trashIcon.closest(".modal-work").remove();
+                
+                for (let i = 0; i < works.length; i++) {
+                    if (works[i].id == id) {
+                        works.splice(i, 1);
+                    }
+                    displayWorks();
                 }
+            }
+            })
+    })
+})
+
+// Suppression de tous les projets 
+
+const deleteAllWorks = document.querySelector(".delete-gallery");
+
+        works.forEach(work => {
+
+            const id = work.id;
+
+            deleteAllWorks.addEventListener("click", () => {
+                fetch(`http://localhost:5678/api/works/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${sessionStorage.getItem("user")}`
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            gallery.innerHTML = "";
+                            document.querySelector(".categories").innerHTML = "";
+                            document.querySelector(".modal-gallery").innerHTML = "";
+                        }
+                    })
             })
         })
 
-        for (let i = 0; i < data.length; i++) {
-        // Pour chaque projet
-            const modalGallery = document.querySelector(".modal-gallery");
-            // Sélection de la gallerie de photo
-            const modalWork = document.createElement("div");
-            const modalWorkImage = document.createElement("img");
-            const modalWorkDelete = document.createElement("img");
-            const modalWorkEdit = document.createElement("p");
-            // Création d'une balise image
-            modalWorkImage.classList.add("modal-figure");
-            modalWorkDelete.classList.add("modal-delete");
-            // Ajout d'un classe
-            modalWorkImage.src = data[i].imageUrl;
-            modalWorkImage.crossOrigin = 'anonymous';
-            modalWorkImage.alt = data[i].title;
-            modalWorkEdit.innerText = "éditer";
-            modalWorkDelete.src = "assets/icons/delete-icon.png";
-            // Configuration de la source de chaque image et de leur description
-            modalGallery.appendChild(modalWorkImage);
-            modalGallery.appendChild(modalWork);
-            modalWork.appendChild(modalWorkImage);
-            modalWork.appendChild(modalWorkDelete);
-            modalWork.appendChild(modalWorkEdit)
-            // Rattachement au DOM
-        }
+// Gestion de l'ajout d'un nouveau projet //
 
-    }) 
+// Gestion du file upload //
 
-// Gestion du login
+const fileUploadInput = document.querySelector("#file");
 
-const stayLogged = localStorage.getItem("user");
-// Récupération du token
+fileUploadInput.addEventListener("change", previewFile);
 
-function logOut() { 
-    loggedUser = localStorage.removeItem("user");
-}
-// Gestion de la déconnexion
+function previewFile() {
+    const fileExtension = /\.(jpe?g|png)$/i;
 
-if (stayLogged) {
-// Si l'utilisateur est logué
-    const logIn = document.querySelector("#loginLink");
-    logIn.innerText = "logout";
-    // Remplacement du lien login par logout
-    logIn.addEventListener("click", () => logOut());
-    // Au clic, déconnexion
+    if (fileUploadInput.files.length === 0 || !fileExtension.test(fileUploadInput.files[0].name)) {
+        return;
+    } // Vérifie le format du fichier
 
-    // Mode édition
+    const file = fileUploadInput.files[0];
+    fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.addEventListener("load", (e) => displayPicture(e, file));
+} // Conserve et lit le fichier
 
-    // const editBanner = ;
-    // // Ajout du bandeau d'édition (prototype)
+function displayPicture(e, file) {
+    const addPhoto = document.querySelector(".addphoto");
 
-    // Ajout des boutons "modifier"
+    const picture = document.createElement("img");
+    picture.classList.add("selected-picture");
+    picture.src = e.target.result;
+    picture.style.objectFit = "contain";
+    picture.style.margin = "0";
+    picture.style.width = "100%";
+    picture.style.height = "100%";
 
-        // // Gestion de la photo de présentation (prototype)
+    const addPhotoPicture = document.querySelector(".addphoto > img");
+    const addPhotoLabel = document.querySelector(".addphoto > label");
+    const addPhotoInput = document.querySelector(".addphoto > input");
+    const addPhotoParagraph = document.querySelector(".addphoto > p");
 
-        // // Gestion du titre (prototype)
+    addPhotoPicture.style.display = "none";
+    addPhotoLabel.style.display = "none";
+    addPhotoInput.style.display = "none";
+    addPhotoParagraph.style.display = "none";
 
-        // Gestion des projets
+    addPhoto.appendChild(picture);
+    // const selectedPicture = document.querySelector(".selected-picture");
 
-        const worksEditButton = document.createElement("div");
-        worksEditButton.classList.add("btn-edit");
-        const worksEditIcon = document.createElement("img");
-        worksEditIcon.src = "assets/icons/black-edit-icon.png" ;
-        const worksEditText = document.createElement("p");
-        worksEditText.innerText = "modifier";
-        // Création du bouton modifier pour les projets
-        const galleryTitle = document.querySelector(".galleryTitle");
-        galleryTitle.appendChild(worksEditButton);
-        worksEditButton.appendChild(worksEditIcon);
-        worksEditButton.appendChild(worksEditText);
-        // Rattachement au DOM 
+} // Affiche la photo
 
-        // Modale
-
-        const modal = document.querySelector(".modal");
-        // Sélection de la modale
-
-        worksEditButton.addEventListener("click", () => {
-        // Au clic sur le bouton modifier
-            modal.style.display = "block";
-            modal.style.display = "flex";
-        }) // Ouverture de la modale
-
-        const closeButtonModal = document.querySelector(".close-icon");
-        // Sélection de la croix
-
-        closeButtonModal.addEventListener("click", () => {
-        // Au clic,    
-            modal.style.display = "none";
-        }) // Fermeture de la modale
-
-        modal.addEventListener("click", () => {
-        // Au clic en dehors de la modale,
-            modal.style.display = "none";
-        }) // Fermeture
+// Intégration des catégories en tant qu'option dans le champ select
+const formWorkCategory = document.querySelector("#category");
+const defaultOption = document.createElement("option");
+defaultOption.value = "";
+defaultOption.textContent = "";
+defaultOption.disabled = true;
+formWorkCategory.appendChild(defaultOption);
         
-        modal.children[0].addEventListener("click", function(e) {
-            e.stopPropagation();
-        }) // Empêche le clic en dehors de la modale de se propager à la modale 
+        categoryList.forEach(category => {
+
+            const option = document.createElement("option");
+            option.value = category;
+            option.textContent = category;
+            formWorkCategory.appendChild(option);
+
+            for (let i = 0; i < works.length; i++) {
+                if (option.textContent === works[i].category.name) {
+                    option.dataset.id = works[i].category.id;
+                }
+            } 
+        })
+        formWorkCategory.options[0].selected = true;
+
+// Gestion du formulaire //
+
+const formAddWork = document.querySelector("#modal-addwork");
+const formWorkPicture = document.querySelector("#file");
+const formWorkTitle = document.querySelector("#title");
+
+const inputs = [formWorkPicture, formWorkTitle, formWorkCategory];
+
+inputs.forEach(input => {
+    input.addEventListener("input", () => {
+        const allInputsFilled = inputs.every(input => input.value !== "");
+    if (allInputsFilled) {
+        document.querySelector("#work-submit").style.backgroundColor = "#1D6154";
+    } else {
+        document.querySelector("#work-submit").style.backgroundColor = "#BFBFBF";
+    }
+    })
+}) // Vérifie si tous les champs inputs sont remplis pour colorer le bouton submit
+
+
+formAddWork.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const selectedOption = formWorkCategory.options[formWorkCategory.selectedIndex];
+    // Sélection de l'option
+    const categoryId = selectedOption.getAttribute("data-id");
+    // Récupération de l'id de la catégorie sélectionnée
+
+    const workFormData = new FormData();
+    workFormData.append("image", formWorkPicture.files[0]);
+    workFormData.append("title", formWorkTitle.value);
+    workFormData.append("category", categoryId);
+
+    fetch("http://localhost:5678/api/works", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${sessionStorage.getItem("user")}`
+        },
+        body: workFormData,
+    })
+        .then(response => {
+            if (response.ok) {
+                closeModal();
+                return response.json();
+            } else {
+                const error = document.querySelector("#error");
+                if (error) {
+                    error.innerHTML = "Veuillez renseigner tous les champs";
+                } else {
+                    const errorMessage = document.createElement("p");
+                    errorMessage.setAttribute("id", "error");
+                    errorMessage.innerHTML = "Veuillez renseigner tous les champs";
+                    formWorkCategory.after(errorMessage);
+                } // Si champs incomplets, affichage d'un message d'erreur si il n'existe pas déjà
+            }
+        })
+    .then (data => {
+        works.push(data);
+        displayWorks();
+        // Ajout du projet dans la modale !
+        // displayModalGallery();
+    })
+})        
 
 }
-
-
-
-                // Icone déplacer photo sur chaque figure existante (prototype)
-
-                // Icone supprimer photo sur chaque figure existante
-
-                // // Au clic, suppression de la photo
-
-                // // Au clic sur Ajouter une photo
-
-                    // // Suite de la modale
-
-
-                // Gestion de la suppression d'un projet
-
-                // Gestion de l'ajout d'un nouveau projet
-
-                    // Ajout d'une photo
-
-                    // Ajout d'un titre
-
-                    // Choix de la catégorie
-
-                    // Validation et gestion de l'affichage du nouveau projet
+main();
