@@ -18,15 +18,15 @@
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<a href="login.html"><li id="loginLink">login</li></a>
-			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+			<li id="loginLink"><a href="login.html">login</a></li>
+			<li><img src="./assets/icons/instagram.png" alt="Instagram" id="instagram-icon"></li>
 		</ul>
 	</nav>
 </header>
 <main>
 	<section id="introduction">
 		<figure>
-			<img src="./assets/images/sophie-bluel.png" alt="">
+			<img src="./assets/images/sophie-bluel.png" alt="Sophie Bluel">
 		</figure>
 		<article>
 			<h2>Designer d'espace</h2>
@@ -41,8 +41,8 @@
 			<aside class="modal">
 				<div class="modal-wrapper">
 					<div class="modal-navigation">
-						<img src="assets/icons/back-icon.png" class="back-icon">
-						<img src="assets/icons/close-icon.png" class="close-icon">
+						<img src="assets/icons/back-icon.png" class="back-icon" alt="go back icon">
+						<img src="assets/icons/close-icon.png" class="close-icon" alt="close icon">
 					</div>
 					<div class="modal-gallery-wrapper">
 						<h2>Galerie photo</h2>
@@ -56,7 +56,7 @@
 						<h2>Ajout photo</h2>
 						<form id="modal-addwork">
 							<div class="addphoto">
-								<img class="img-icon" src="assets/icons/picture.png">
+								<img class="img-icon" src="assets/icons/picture.png" alt="picture icon">
 								<label for="file">+ Ajouter photo</label>
 								<input type="file" name="file" id="file" accept="image/jpeg, image/png" hidden>
 								<p>jpg, png : 4mo max</p>
@@ -64,7 +64,7 @@
 							<label for="title">Titre</label>
 							<input type="text" name="title" id="title" required>
 							<label for="category">Catégorie</label>
-							<img class="arrow-down" src="assets/icons/dropdown-icon.png">
+							<img class="arrow-down" src="assets/icons/dropdown-icon.png" alt="arrow down icon">
 							<select name="category" id="category" required>
 							</select>
 							<hr>

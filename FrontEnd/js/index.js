@@ -237,7 +237,6 @@ function deleteWork() {
               works.splice(i, 1);
 
               if (works.length < 1) {
-                console.log("Galerie vide");
                 closeModal();
                 document.querySelector(".categories").remove();
               }
@@ -269,6 +268,11 @@ function deleteAllWorks() {
           displayModalGallery();
           closeModal();
         }
+      }).then((data) => {
+        const categories = document.querySelector(".categories");
+          if (categories) {
+            categories.remove();
+          }
       });
     });
   });
@@ -330,17 +334,17 @@ async function main() {
   const categoryList = new Set(allWorksCategories);
   // Récupération de la liste des catégories (sans doublon)
 
-  const portfolio = document.getElementById("portfolio");
-  const gallery = document.querySelector(".gallery");
-
-  const categoryButtonsWrapper = document.createElement("div");
-  categoryButtonsWrapper.classList.add("categories");
-
-  portfolio.appendChild(categoryButtonsWrapper);
-  portfolio.insertBefore(categoryButtonsWrapper, gallery);
-  // Création et affichage de la balise contenant les boutons catégories
-
   if (works.length > 0) {
+    const portfolio = document.getElementById("portfolio");
+    const gallery = document.querySelector(".gallery");
+
+    const categoryButtonsWrapper = document.createElement("div");
+    categoryButtonsWrapper.classList.add("categories");
+
+    portfolio.appendChild(categoryButtonsWrapper);
+    portfolio.insertBefore(categoryButtonsWrapper, gallery);
+    // Création et affichage de la balise contenant les boutons catégories
+
     const buttonAll = document.createElement("button");
     buttonAll.classList.add("btn-category");
     buttonAll.setAttribute("id", "all");
@@ -372,6 +376,7 @@ async function main() {
     }); // Création et affichage des boutons catégories pour chaque catégorie
   }
   displayWorks();
+ 
 
   // Gestion du login //
 
