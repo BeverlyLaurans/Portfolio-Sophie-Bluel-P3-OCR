@@ -1,4 +1,5 @@
 let works = [];
+let categories = [];
 
 // Affichage de la galerie
 function displayWorks() {
@@ -34,48 +35,19 @@ function displayWorks() {
 
 function displayCategories() {
 
-  if (works.length > 0) {
-
-    let allWorksCategories = works.map((work) => work.category.name);
-    // Récupération du nom des catégories de tous les projets
-    let categoryList = new Set(allWorksCategories);
-    // Récupération de la liste des catégories (sans doublon)
-
-    const portfolio = document.getElementById("portfolio");
-    const gallery = document.querySelector(".gallery");
-
-    const categoryButtonsWrapper = document.createElement("div");
-    categoryButtonsWrapper.classList.add("categories");
-
-    portfolio.appendChild(categoryButtonsWrapper);
-    portfolio.insertBefore(categoryButtonsWrapper, gallery);
-    // Création et affichage de la balise contenant les boutons catégories
-
-    const buttonAll = document.createElement("button");
-    buttonAll.classList.add("btn-category");
-    buttonAll.setAttribute("id", "all");
-    buttonAll.innerText = "Tous";
-    categoryButtonsWrapper.appendChild(buttonAll);
-    // Création et affichage du bouton Tous qui contient tous les projets
-
-    buttonAll.classList.add("active");
-    activeButton = buttonAll;
-    // Par défaut, ajout de la classe active sur le bouton Tous
-
-    categoryList.forEach((category) => {
+    for (let i = 0; i < categories.length; i++) {
       const categoryButton = document.createElement("button");
       categoryButton.classList.add("btn-category");
-      categoryButton.innerText = category;
+      categoryButton.innerText = categories[i].name;
       categoryButtonsWrapper.appendChild(categoryButton);
       // Création et affichage des boutons catégories pour chaque catégorie
 
       for (let i = 0; i < works.length; i++) {
         if (categoryButton.innerText === works[i].category.name) {
-        categoryButton.dataset.id = works[i].category.id;
+        categoryButton.dataset.id = works[i].categoryId;
         }
-      } // Attribution de son id à chaque catégorie
-    }); 
-  }
+      } // Attribution de l'id de la catégorie à chaque bouton catégorie
+    }
 }
 
 function switchToEditMode() {
@@ -285,7 +257,6 @@ function deleteWork() {
 
               if (works.length < 1) {
                 closeModal();
-                document.querySelector(".categories").remove();
               }
             }
             displayWorks();
@@ -317,9 +288,6 @@ function deleteAllWorks() {
         }
       }).then((data) => {
         const categories = document.querySelector(".categories");
-          if (categories) {
-            categories.remove();
-          }
       });
     });
   });
@@ -376,6 +344,30 @@ const logged = sessionStorage.getItem("user");
 async function main() {
   works = await fetch("http://localhost:5678/api/works");
   works = await works.json(); // Récupération des projets
+
+  categories = await fetch("http://localhost:5678/api/categories");
+  categories = await categories.json(); // Récupération des catégories
+
+  const portfolio = document.getElementById("portfolio");
+  const gallery = document.querySelector(".gallery");
+
+  categoryButtonsWrapper = document.createElement("div");
+  categoryButtonsWrapper.classList.add("categories");
+
+  portfolio.appendChild(categoryButtonsWrapper);
+  portfolio.insertBefore(categoryButtonsWrapper, gallery);
+  // Création et affichage de la balise contenant les boutons catégories
+
+  const buttonAll = document.createElement("button");
+  buttonAll.classList.add("btn-category");
+  buttonAll.setAttribute("id", "all");
+  buttonAll.innerText = "Tous";
+  categoryButtonsWrapper.appendChild(buttonAll);
+  // Création et affichage du bouton Tous qui contient tous les projets
+
+  buttonAll.classList.add("active");
+  activeButton = buttonAll;
+  // Par défaut, ajout de la classe active sur le bouton Tous
 
   displayCategories();
 
@@ -438,9 +430,6 @@ async function main() {
   defaultOption.textContent = "";
   defaultOption.disabled = true;
   formWorkCategory.appendChild(defaultOption);
-
-  let categories = await fetch("http://localhost:5678/api/categories");
-  categories = await categories.json(); // Récupération des catégories
 
   categories.forEach((category) => {
     const option = document.createElement("option");
@@ -514,8 +503,19 @@ async function main() {
       })
       .then((data) => {
         works.push(data);
+
+        for (let i = 0; i < categories.length; i++) {
+          const categoryButton = document.querySelectorAll(".btn-category");
+          if (categoryButton.innerText === categories[i].name) {
+          categoryButton.dataset.id = categories[i].id;
+          }
+        } // Attribution de l'id de la catégorie à chaque bouton catégorie
+
         displayWorks();
         displayModalGallery();
+        console.log(data);
+        console.log(works);
+
       });
   });
 }
