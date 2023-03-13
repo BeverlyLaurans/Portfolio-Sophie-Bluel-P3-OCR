@@ -10,9 +10,9 @@ function displayWorks() {
   for (let i = 0; i < works.length; i++) {
     if (
       activeButton.innerText === "Tous" ||
-      works[i].category.name === activeButton.innerText
-    ) {
-      // Si la catégorie du projet correspond au titre du bouton ou au bouton Tous
+      activeButton.dataset.id === works[i].categoryId.toString()
+    ) { 
+      // Si l'id de la catégorie du projet correspond à l'id du bouton ou au bouton Tous
       const work = document.createElement("figure");
       work.classList.add("work");
       const workImage = document.createElement("img");
@@ -68,6 +68,12 @@ function displayCategories() {
       categoryButton.innerText = category;
       categoryButtonsWrapper.appendChild(categoryButton);
       // Création et affichage des boutons catégories pour chaque catégorie
+
+      for (let i = 0; i < works.length; i++) {
+        if (categoryButton.innerText === works[i].category.name) {
+        categoryButton.dataset.id = works[i].category.id;
+        }
+      } // Attribution de son id à chaque catégorie
     }); 
   }
 }
