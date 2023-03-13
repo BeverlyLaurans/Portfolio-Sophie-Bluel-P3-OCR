@@ -2,6 +2,7 @@ let works = [];
 
 // Affichage de la galerie
 function displayWorks() {
+
   const gallery = document.querySelector(".gallery");
   gallery.innerHTML = "";
   // Vidage de la galerie avant chaque nouvel affichage de projets
@@ -28,6 +29,46 @@ function displayWorks() {
       work.appendChild(workTitle);
       // Pour chaque projet, création et affichage des balises
     }
+  }
+}
+
+function displayCategories() {
+
+  if (works.length > 0) {
+
+    let allWorksCategories = works.map((work) => work.category.name);
+    // Récupération du nom des catégories de tous les projets
+    let categoryList = new Set(allWorksCategories);
+    // Récupération de la liste des catégories (sans doublon)
+
+    const portfolio = document.getElementById("portfolio");
+    const gallery = document.querySelector(".gallery");
+
+    const categoryButtonsWrapper = document.createElement("div");
+    categoryButtonsWrapper.classList.add("categories");
+
+    portfolio.appendChild(categoryButtonsWrapper);
+    portfolio.insertBefore(categoryButtonsWrapper, gallery);
+    // Création et affichage de la balise contenant les boutons catégories
+
+    const buttonAll = document.createElement("button");
+    buttonAll.classList.add("btn-category");
+    buttonAll.setAttribute("id", "all");
+    buttonAll.innerText = "Tous";
+    categoryButtonsWrapper.appendChild(buttonAll);
+    // Création et affichage du bouton Tous qui contient tous les projets
+
+    buttonAll.classList.add("active");
+    activeButton = buttonAll;
+    // Par défaut, ajout de la classe active sur le bouton Tous
+
+    categoryList.forEach((category) => {
+      const categoryButton = document.createElement("button");
+      categoryButton.classList.add("btn-category");
+      categoryButton.innerText = category;
+      categoryButtonsWrapper.appendChild(categoryButton);
+      // Création et affichage des boutons catégories pour chaque catégorie
+    }); 
   }
 }
 
@@ -320,6 +361,7 @@ function displayPicture(e, file) {
 
 function logOut() {
   const unlogged = sessionStorage.removeItem("user");
+  location.replace("index.html");
 } // Gestion de la déconnexion
 
 const logged = sessionStorage.getItem("user");
@@ -329,54 +371,21 @@ async function main() {
   works = await fetch("http://localhost:5678/api/works");
   works = await works.json(); // Récupération des projets
 
-  const allWorksCategories = works.map((work) => work.category.name);
-  // Récupération du nom des catégories de tous les projets
-  const categoryList = new Set(allWorksCategories);
-  // Récupération de la liste des catégories (sans doublon)
+  displayCategories();
 
-  if (works.length > 0) {
-    const portfolio = document.getElementById("portfolio");
-    const gallery = document.querySelector(".gallery");
+  const categoryButtons = document.querySelectorAll(".btn-category");
 
-    const categoryButtonsWrapper = document.createElement("div");
-    categoryButtonsWrapper.classList.add("categories");
-
-    portfolio.appendChild(categoryButtonsWrapper);
-    portfolio.insertBefore(categoryButtonsWrapper, gallery);
-    // Création et affichage de la balise contenant les boutons catégories
-
-    const buttonAll = document.createElement("button");
-    buttonAll.classList.add("btn-category");
-    buttonAll.setAttribute("id", "all");
-    buttonAll.innerText = "Tous";
-    categoryButtonsWrapper.appendChild(buttonAll);
-    // Création et affichage du bouton Tous qui contient tous les projets
-
-    buttonAll.classList.add("active");
-    activeButton = buttonAll;
-    // Par défaut, ajout de la classe active sur le bouton Tous
-
-    categoryList.forEach((category) => {
-      const categoryButton = document.createElement("button");
-      categoryButton.classList.add("btn-category");
-      categoryButton.innerText = category;
-      categoryButtonsWrapper.appendChild(categoryButton);
-
-      const categoryButtons = document.querySelectorAll(".btn-category");
-
-      categoryButtons.forEach((categoryButton) => {
-        categoryButton.addEventListener("click", function () {
-          activeButton.classList.remove("active");
-          categoryButton.classList.add("active");
-          activeButton = categoryButton;
-          // Au clic sur un bouton, retire la classe active et l'applique sur le bouton cliqué
-          displayWorks();
-        });
+    categoryButtons.forEach((categoryButton) => {
+      categoryButton.addEventListener("click", function () {
+        activeButton.classList.remove("active");
+        categoryButton.classList.add("active");
+        activeButton = categoryButton;
+        // Au clic sur un bouton, retire la classe active et l'applique sur le bouton cliqué
+        displayWorks();
       });
-    }); // Création et affichage des boutons catégories pour chaque catégorie
-  }
+    });
+
   displayWorks();
- 
 
   // Gestion du login //
 
@@ -424,15 +433,18 @@ async function main() {
   defaultOption.disabled = true;
   formWorkCategory.appendChild(defaultOption);
 
-  categoryList.forEach((category) => {
+  let categories = await fetch("http://localhost:5678/api/categories");
+  categories = await categories.json(); // Récupération des catégories
+
+  categories.forEach((category) => {
     const option = document.createElement("option");
-    option.value = category;
-    option.textContent = category;
+    option.value = category.name;
+    option.textContent = category.name;
     formWorkCategory.appendChild(option);
 
-    for (let i = 0; i < works.length; i++) {
-      if (option.textContent === works[i].category.name) {
-        option.dataset.id = works[i].category.id;
+    for (let i = 0; i < categories.length; i++) {
+      if (option.textContent === categories[i].name) {
+        option.dataset.id = categories[i].id;
       }
     } // Ajoute un champ option par catégorie existante
   }); // Par défaut, sélection de l'option vide

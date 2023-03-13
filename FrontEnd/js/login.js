@@ -2,6 +2,7 @@
 
 function logOut() {
   const unlogged = sessionStorage.removeItem("user");
+  location.replace("index.html");
 } // Gestion de la déconnexion
 
 const form = document.querySelector(".login-form");

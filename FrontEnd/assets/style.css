@@ -305,6 +305,10 @@ footer nav ul {
 
 /* Edition mode */
 
+#loginLink {
+	cursor: pointer;
+}
+
 .edit-banner {
 	position: fixed;
 	background-color: #000000;
