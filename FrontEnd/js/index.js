@@ -143,6 +143,10 @@ function closeModal() {
   if (selectedPicture) {
     document.querySelector(".selected-picture").remove();
   }
+  const error = document.querySelector("#error");
+  if (error) {
+    error.remove();
+  }
 } // Fermeture de la modale
 
 const addPhotoButton = document.querySelector(".modal-gallery-wrapper > button");
@@ -342,6 +346,7 @@ const logged = sessionStorage.getItem("user");
 // Récupération du token d'authentification
 
 async function main() {
+  
   works = await fetch("http://localhost:5678/api/works");
   works = await works.json(); // Récupération des projets
 
@@ -467,6 +472,8 @@ async function main() {
   formAddWork.addEventListener("submit", (e) => {
     e.preventDefault();
 
+    let errorHappened = false;
+
     const selectedOption =
       formWorkCategory.options[formWorkCategory.selectedIndex];
     // Sélection de l'option
@@ -490,6 +497,7 @@ async function main() {
           closeModal();
           return response.json();
         } else {
+          errorHappened = true;
           const error = document.querySelector("#error");
           if (error) {
             error.innerHTML = "Veuillez renseigner tous les champs";
@@ -502,6 +510,7 @@ async function main() {
         }
       })
       .then((data) => {
+        if (!errorHappened) {
         works.push(data);
 
         for (let i = 0; i < categories.length; i++) {
@@ -515,7 +524,7 @@ async function main() {
         displayModalGallery();
         console.log(data);
         console.log(works);
-
+      }
       });
   });
 }
