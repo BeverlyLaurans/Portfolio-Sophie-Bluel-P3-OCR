@@ -3,7 +3,6 @@ let categories = [];
 
 // Affichage de la galerie
 function displayWorks() {
-
   const gallery = document.querySelector(".gallery");
   gallery.innerHTML = "";
   // Vidage de la galerie avant chaque nouvel affichage de projets
@@ -12,7 +11,7 @@ function displayWorks() {
     if (
       activeButton.innerText === "Tous" ||
       activeButton.dataset.id === works[i].categoryId.toString()
-    ) { 
+    ) {
       // Si l'id de la catégorie du projet correspond à l'id du bouton ou au bouton Tous
       const work = document.createElement("figure");
       work.classList.add("work");
@@ -34,20 +33,19 @@ function displayWorks() {
 }
 
 function displayCategories() {
+  for (let i = 0; i < categories.length; i++) {
+    const categoryButton = document.createElement("button");
+    categoryButton.classList.add("btn-category");
+    categoryButton.innerText = categories[i].name;
+    categoryButtonsWrapper.appendChild(categoryButton);
+    // Création et affichage des boutons catégories pour chaque catégorie
 
-    for (let i = 0; i < categories.length; i++) {
-      const categoryButton = document.createElement("button");
-      categoryButton.classList.add("btn-category");
-      categoryButton.innerText = categories[i].name;
-      categoryButtonsWrapper.appendChild(categoryButton);
-      // Création et affichage des boutons catégories pour chaque catégorie
-
-      for (let i = 0; i < works.length; i++) {
-        if (categoryButton.innerText === works[i].category.name) {
+    for (let i = 0; i < works.length; i++) {
+      if (categoryButton.innerText === works[i].category.name) {
         categoryButton.dataset.id = works[i].categoryId;
-        }
-      } // Attribution de l'id de la catégorie à chaque bouton catégorie
-    }
+      }
+    } // Attribution de l'id de la catégorie à chaque bouton catégorie
+  }
 }
 
 function switchToEditMode() {
@@ -149,7 +147,9 @@ function closeModal() {
   }
 } // Fermeture de la modale
 
-const addPhotoButton = document.querySelector(".modal-gallery-wrapper > button");
+const addPhotoButton = document.querySelector(
+  ".modal-gallery-wrapper > button"
+);
 const galleryPhotoModal = document.querySelector(".modal-gallery-wrapper");
 const addWorkModal = document.querySelector(".modal-addwork-wrapper");
 const goBackArrow = document.querySelector(".back-icon");
@@ -163,7 +163,8 @@ function displayAddWorkModal() {
   addWorkModal.style.display = "block";
   addWorkModal.style.display = "flex";
   goBackArrow.style.display = "block";
-  document.querySelector(".modal-navigation").style.justifyContent = "space-between";
+  document.querySelector(".modal-navigation").style.justifyContent =
+    "space-between";
   addPhotoPicture.style.display = "block";
   addPhotoLabel.style.display = "block";
   addPhotoParagraph.style.display = "block";
@@ -283,16 +284,18 @@ function deleteAllWorks() {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("user")}`,
         },
-      }).then((response) => {
-        if (response.ok) {
-          works = [];
-          displayWorks();
-          displayModalGallery();
-          closeModal();
-        }
-      }).then((data) => {
-        const categories = document.querySelector(".categories");
-      });
+      })
+        .then((response) => {
+          if (response.ok) {
+            works = [];
+            displayWorks();
+            displayModalGallery();
+            closeModal();
+          }
+        })
+        .then((data) => {
+          const categories = document.querySelector(".categories");
+        });
     });
   });
 } // Suppression de tous les projets
@@ -346,7 +349,6 @@ const logged = sessionStorage.getItem("user");
 // Récupération du token d'authentification
 
 async function main() {
-  
   works = await fetch("http://localhost:5678/api/works");
   works = await works.json(); // Récupération des projets
 
@@ -378,15 +380,15 @@ async function main() {
 
   const categoryButtons = document.querySelectorAll(".btn-category");
 
-    categoryButtons.forEach((categoryButton) => {
-      categoryButton.addEventListener("click", function () {
-        activeButton.classList.remove("active");
-        categoryButton.classList.add("active");
-        activeButton = categoryButton;
-        // Au clic sur un bouton, retire la classe active et l'applique sur le bouton cliqué
-        displayWorks();
-      });
+  categoryButtons.forEach((categoryButton) => {
+    categoryButton.addEventListener("click", function () {
+      activeButton.classList.remove("active");
+      categoryButton.classList.add("active");
+      activeButton = categoryButton;
+      // Au clic sur un bouton, retire la classe active et l'applique sur le bouton cliqué
+      displayWorks();
     });
+  });
 
   displayWorks();
 
@@ -462,9 +464,11 @@ async function main() {
     input.addEventListener("input", () => {
       const allInputsFilled = inputs.every((input) => input.value !== "");
       if (allInputsFilled) {
-        document.querySelector("#work-submit").style.backgroundColor = "#1D6154";
+        document.querySelector("#work-submit").style.backgroundColor =
+          "#1D6154";
       } else {
-        document.querySelector("#work-submit").style.backgroundColor = "#BFBFBF";
+        document.querySelector("#work-submit").style.backgroundColor =
+          "#BFBFBF";
       }
     });
   }); // Vérifie si tous les champs inputs sont remplis pour colorer le bouton submit
@@ -511,20 +515,18 @@ async function main() {
       })
       .then((data) => {
         if (!errorHappened) {
-        works.push(data);
+          works.push(data);
 
-        for (let i = 0; i < categories.length; i++) {
-          const categoryButton = document.querySelectorAll(".btn-category");
-          if (categoryButton.innerText === categories[i].name) {
-          categoryButton.dataset.id = categories[i].id;
-          }
-        } // Attribution de l'id de la catégorie à chaque bouton catégorie
+          for (let i = 0; i < categories.length; i++) {
+            const categoryButton = document.querySelectorAll(".btn-category");
+            if (categoryButton.innerText === categories[i].name) {
+              categoryButton.dataset.id = categories[i].id;
+            }
+          } // Attribution de l'id de la catégorie à chaque bouton catégorie
 
-        displayWorks();
-        displayModalGallery();
-        console.log(data);
-        console.log(works);
-      }
+          displayWorks();
+          displayModalGallery();
+        }
       });
   });
 }
